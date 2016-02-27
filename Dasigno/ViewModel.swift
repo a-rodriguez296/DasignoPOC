@@ -32,7 +32,7 @@ class ViewModel {
         
         
         loginOperation =  buttonTapped.withLatestFrom(combinedFields).flatMapLatest { (email, password) -> Driver<LoginResult> in
-         return DasignoApiClient.sharedInstance.login(email, password: password).asDriver(onErrorJustReturn: LoginResult.Failure(message: "Invalid user"))
+         return DasignoApiClient.sharedInstance.login(email, password: password).asDriver(onErrorJustReturn: LoginResult.InvalidUser(message: "Email o password inválido."))
         }
     }
     

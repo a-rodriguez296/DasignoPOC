@@ -19,8 +19,7 @@ class DasignoApiClient: DasignoApi {
         
         return Observable.create({ (observer) -> Disposable in
             
-            
-            Alamofire.request(.POST, "http://192.168.1.107/Home/VerifyIdentity", parameters: ["Email":"andres.paris@dasigno.com","Password":"Temporal1"], encoding: Alamofire.ParameterEncoding.JSON, headers: nil)
+            Alamofire.request(Router.Login(email: email, password: password))
                 .responseJSON(completionHandler: { (response) -> Void in
                     
                     switch response.result{
@@ -28,7 +27,7 @@ class DasignoApiClient: DasignoApi {
                     case .Success(let value):
                         
                         let json = JSON(value)
-                        if let result = json["result"].int {
+                        if let _ = json["result"].int {
                             
                             
                             //Cookies
@@ -48,7 +47,7 @@ class DasignoApiClient: DasignoApi {
                         }
                         else{
                             
-                            observer.onError(LoginResult.invalidUser(message: "Invalid user"))
+                            observer.onError(LoginResult.InvalidUser(message: "Invalid user"))
                             
                         }
                         
@@ -67,7 +66,7 @@ class DasignoApiClient: DasignoApi {
         
         return Observable.create({ (observer) -> Disposable in
             
-            Alamofire.request(.GET, "http://192.168.1.107/Task/Search/", parameters: ["CurrentPage": index,"Mailbox": 7, "NextPage":false, "Order": 0, "SearchValue": ""], encoding: Alamofire.ParameterEncoding.URL, headers: nil).responseJSON(completionHandler: { (response) -> Void in
+            Alamofire.request(.GET, "http://190.93.157.245/Task/Search/", parameters: ["CurrentPage": index,"Mailbox": 7, "NextPage":false, "Order": 0, "SearchValue": ""], encoding: Alamofire.ParameterEncoding.URL, headers: nil).responseJSON(completionHandler: { (response) -> Void in
                 
                 switch response.result{
                     

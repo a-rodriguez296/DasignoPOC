@@ -12,7 +12,7 @@ import RxSwift
 enum LoginResult: ErrorType{
     
     case Success
-    case invalidUser(message: String)
+    case InvalidUser(message: String)
     case Failure(message: String)
     
 }

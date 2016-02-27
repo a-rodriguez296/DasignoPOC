@@ -1,20 +1,20 @@
 //
-//  TablaViewModel.swift
+//  ListViewModel.swift
 //  Dasigno
 //
-//  Created by Alejandro Rodriguez on 2/25/16.
+//  Created by Alejandro Rodriguez on 2/27/16.
 //  Copyright © 2016 Alejandro Rodriguez. All rights reserved.
 //
 
 import RxCocoa
 import RxSwift
 
-class TablaViewModel {
+class ListViewModel {
+    
     let disposeBag = DisposeBag()
-    
     let didLoadItems = PublishSubject<Bool>()
-    
     var tableViewItems = [Element]()
+    
     
     init(){
         
@@ -25,9 +25,7 @@ class TablaViewModel {
                 self.didLoadItems.on(.Next(true))
                 
                 }, onError: nil, onCompleted: nil, onDisposed: nil).addDisposableTo(disposeBag)
-        
     }
     
     
-
 }

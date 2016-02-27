@@ -10,7 +10,7 @@ import Alamofire
 
 enum Router: URLRequestConvertible {
     
-    static let baseURLString = "http://192.168.1.107"
+    static let baseURLString = "http://190.93.157.245"
 
     
     case Login(email: String, password: String)

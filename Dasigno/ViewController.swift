@@ -28,8 +28,18 @@ class ViewController: UIViewController {
         
         viewModel?.combinedValidatedFileds.drive(btnEntrar.rx_enabled).addDisposableTo(disposeBag)
         viewModel?.loginOperation
-            .drive(onNext: { (response) -> Void in
-                print("\(response)")
+            .drive(onNext: {[unowned self] (response) -> Void in
+                
+                switch response{
+                case .Success:
+                    self.performSegueWithIdentifier("tabla", sender: nil)
+                    break
+                case .InvalidUser(message: let message):
+                    self.showAlertWithMessage(message)
+                case .Failure:
+                    break
+                }
+                
                 }, onCompleted: nil, onDisposed: nil)
             .addDisposableTo(disposeBag)
     }
@@ -41,6 +51,17 @@ class ViewController: UIViewController {
     
     @IBAction func didSignIn(sender: AnyObject) {
         //        viewModel.didPressSignIn(txtEmail.text!, password: txtPassword.text!)
+    }
+    
+    func showAlertWithMessage(message: String){
+        
+        let alertController = UIAlertController(title: "Atención", message: message, preferredStyle: .Alert)
+        let alertAction = UIAlertAction(title: "Ok", style: .Cancel) {[unowned self] (action) -> Void in
+            self.txtPassword.text = ""
+        }
+        alertController.addAction(alertAction)
+        presentViewController(alertController, animated: true, completion: nil)
+        
     }
     
 }
