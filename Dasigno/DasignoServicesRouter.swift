@@ -26,7 +26,7 @@ enum Router: URLRequestConvertible {
                 //Sign in
                 ///////////////////////////////////
             case .Login(let email, let password):
-                let params = ["Email": "andres.paris@dasigno.com","Password": "Temporal1"]
+                let params = ["Email": email,"Password": password]
                 return ("/Home/VerifyIdentity", params)
                
             }
@@ -39,6 +39,38 @@ enum Router: URLRequestConvertible {
         
         return encoding.encode(URLRequest, parameters: result.parameters).0
     }
+}
+
+enum RouterGet: URLRequestConvertible{
+    
+    static let baseURLString = "http://190.93.157.245"
+    
+    case GetElements(index: Int)
+    
+    
+    // MARK: URLRequestConvertible
+    
+    var URLRequest: NSMutableURLRequest {
+        let result: (path: String, parameters: [String: AnyObject]?) = {
+            switch self {
+                
+                
+            case .GetElements(let index):
+                let params = ["CurrentPage": index,"Mailbox": 7, "NextPage":false, "Order": 0, "SearchValue": ""]
+                return ("/Home/VerifyIdentity", params as? [String : AnyObject])
+                
+                
+            }
+        }()
+        
+        let URL = NSURL(string: Router.baseURLString)!
+        let URLRequest = NSMutableURLRequest(URL: URL.URLByAppendingPathComponent(result.path))
+        let encoding = Alamofire.ParameterEncoding.URL
+        
+        return encoding.encode(URLRequest, parameters: result.parameters).0
+    }
+    
+    
 }
 
 

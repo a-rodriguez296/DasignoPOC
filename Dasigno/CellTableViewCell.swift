@@ -24,5 +24,14 @@ class CellTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        lblFrom.text = nil
+        lblTo.text = nil
+        lblDescription.text = nil
+        lblTitle.text = nil
+    }
 
 }

@@ -11,26 +11,51 @@ import RxCocoa
 import RxSwift
 
 class ListViewController: UIViewController, UITableViewDelegate {
-
+    
     let disposeBag = DisposeBag()
     
-    let viewModel = ListViewModel()
+    var viewModel:ListViewModel? = ListViewModel()
     
     @IBOutlet weak var tableView: UITableView!
     
+    let refreshControl = UIRefreshControl()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        viewModel.didLoadItems.subscribeNext {[unowned self] (flag) -> Void in
+        
+        setupViews()
+        
+        viewModel?.didLoadItems.subscribeNext {[unowned self] (flag) -> Void in
             self.tableView.reloadData()
-        }
-        .addDisposableTo(disposeBag)
+            self.refreshControl.endRefreshing()
+            
+            
+            }
+            .addDisposableTo(disposeBag)
+        
+        
+        viewModel?.didPaginate.subscribeNext {[unowned self] (indexesPathsToAdd) -> Void in
+            
+            self.tableView.beginUpdates()
+            self.tableView.insertRowsAtIndexPaths(indexesPathsToAdd, withRowAnimation: .None)
+            self.tableView.endUpdates()
+            
+            }
+            .addDisposableTo(disposeBag)
+        
+        NSNotificationCenter.defaultCenter()
+            .addObserver(self, selector: "reloadTable:", name: "didAddTask", object: nil)
+        
+    }
+    
+    func reloadTable(notification: NSNotification){
+        viewModel?.reloadTable()
     }
     
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        let element:Element = viewModel.tableViewItems[indexPath.row]
+        let element:Element = viewModel!.tableViewItems[indexPath.row]
         
         let cell = tableView.dequeueReusableCellWithIdentifier("celda", forIndexPath: indexPath) as! CellTableViewCell
         
@@ -45,27 +70,30 @@ class ListViewController: UIViewController, UITableViewDelegate {
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.tableViewItems.count
+        return viewModel!.tableViewItems.count
     }
     
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
         
-        print("\(indexPath.row) \(viewModel.tableViewItems.count)")
-        if indexPath.row == viewModel.tableViewItems.count - 1{
-            
+        if indexPath.row == viewModel!.tableViewItems.count - 1{
+            viewModel!.loadMoreTasks()
         }
-        
-        
     }
     
-//    func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-//        
-//        let footer = tableView.dequeueReusableCellWithIdentifier("footer")
-//        
-//        return footer
-//        
-//    }
-
-
-
+    func setupViews(){
+        title = "Tasks"
+        
+        let navButton = UIBarButtonItem(title: "Create Task", style: .Plain, target: self, action: "createTask:")
+        navigationItem.rightBarButtonItem = navButton
+    }
+    
+    
+    func createTask(sender: AnyObject){
+        
+        self.performSegueWithIdentifier("createTask", sender: nil)
+    }
+    
+    deinit{
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
 }

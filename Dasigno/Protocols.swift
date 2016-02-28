@@ -21,5 +21,6 @@ protocol DasignoApi {
     
     func login(email: String, password: String) -> Observable<LoginResult>
     func getElements(index:Int) -> Observable<[Element]>
+    //func createTask(title: String, description: String, date: NSDate) -> Observable<Bool>
 
 }

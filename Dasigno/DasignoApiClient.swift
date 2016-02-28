@@ -66,26 +66,61 @@ class DasignoApiClient: DasignoApi {
         
         return Observable.create({ (observer) -> Disposable in
             
-            Alamofire.request(.GET, "http://190.93.157.245/Task/Search/", parameters: ["CurrentPage": index,"Mailbox": 7, "NextPage":false, "Order": 0, "SearchValue": ""], encoding: Alamofire.ParameterEncoding.URL, headers: nil).responseJSON(completionHandler: { (response) -> Void in
+            Alamofire.request(.GET, "http://190.93.157.245/Task/Search/", parameters: ["CurrentPage": index,"Mailbox": 7, "NextPage":false, "Order": 0, "SearchValue": ""], encoding: Alamofire.ParameterEncoding.URL, headers: nil)
+                .responseJSON(completionHandler: { (response) -> Void in
+                    
+                    switch response.result{
+                        
+                    case .Success(let value):
+                        let json = JSON(value)
+                        let elementList = ElementsList(json: json)
+                        observer.onNext(elementList.elements)
+                        observer.onCompleted()
+                        
+                    case .Failure(let error):
+                        print("\(error)")
+                    }
+                })
+            return NopDisposable.instance
+        })
+    }
+    
+    func createTask(title: String, description: String, date: NSDate) -> Observable<Bool>{
+        
+        return Observable.create({ (observer) -> Disposable in
+            let dateFormatter = NSDateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-DD H:M"
+            let dateString = dateFormatter.stringFromDate(date)
+            
+            
+            let parameters: [String: AnyObject]? = ["TaskNodeID": "",
+            "To": [],
+                "Guests": [],
+                "Name": title,
+                "Description": description,
+                "Files": [],
+                "Priority": 0,
+                "FolderID": 0,
+                "RepeatValues": [],
+                "Alarm": "",
+                "ExpectedEndDate": dateString,
+                "Clone": false
+            ]
+            
+            
+            Alamofire.request(.POST, "http://190.93.157.245/Task/Create/", parameters: parameters, encoding: Alamofire.ParameterEncoding.URL, headers: nil).responseJSON(completionHandler: { (response) -> Void in
+                
                 
                 switch response.result{
-                    
-                case .Success(let value):
-                    print("\(value)")
-                    let json = JSON(value)
-                    let elementList = ElementsList(json: json)
-                    observer.onNext(elementList.elements)
-                    observer.onCompleted()
-                    
-                case .Failure(let error):
-                    print("\(error)")
+                case .Success:
+                    observer.onNext(true)
+                case .Failure:
+                    break
                 }
+
             })
             return NopDisposable.instance
         })
         
-        
     }
-    
-    
 }
